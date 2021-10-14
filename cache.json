@@ -1,0 +1,14 @@
+[
+    {
+        "date": {
+            "addr": "localhost",
+            "port": 2001
+        }
+    },
+    {
+        "meteo": {
+            "addr": "localhost",
+            "port": 2002
+        }
+    }
+]
