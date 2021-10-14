@@ -8,10 +8,9 @@ def load_json():
     if not os.path.exists('cache.json'):
         with open('cache.json', 'w') as f:
             f.write("[]")
-    f = open('cache.json')
-    data = json.load(f)
-    f.close()
-    return data
+    with open('cache.json') as f:
+        data = json.load(f)
+        return data
 
 
 def load_url(name: str):
