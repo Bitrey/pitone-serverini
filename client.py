@@ -14,38 +14,73 @@ def load_json():
 
 
 def load_url(name: str):
-    try:
-        return load_json()[next(i for i, d in enumerate(load_json()) if name in d)][name]
-    except Exception:
-        return None
+    json_cache = load_json()
+    return json_cache[name] if name in json_cache else None
 
 
 arg = " ".join(sys.argv[1:])
-
-# create a TCP socket
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+dns_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+if not arg:
+    print('arg not given')
+    sys.exit()
 
 try:
-    obj = load_url(arg)
-    if obj is None:
-        print(f'{arg} doesn\'t exist')
-        raise Exception("not found")
+    HOST = None
+    PORT = None
+    DNS_SERVER_ADDR = (('localhost', 2000))
 
-    HOST = obj["addr"]
-    PORT = obj["port"]
+    if arg in load_json():
+        # print(f'"{arg}" is saved in cache')
 
-    # connect to server
-    sock.connect((HOST, PORT))
+        obj = load_url(arg)
+        HOST = obj['addr']
+        PORT = obj['port']
+    else:
+        # print(f'"{arg}" is not saved in cache')
 
-    # send arg
-    sock.sendall((arg + "\n").encode())
+        dns_sock.connect(DNS_SERVER_ADDR)
+        dns_sock.sendall(arg.encode())
 
-    # receive arg back from the server
-    received = sock.recv(1024).decode()
-    print(f'Ricevuto: {received}')
+        received = dns_sock.recv(1024).decode()
+        dns_sock.close()
 
-except Exception:
+        # print('dns server sent ' + received)
+
+        if received == 'NOTFOUND':
+            print('server unreacheable')
+        else:
+            HOST = received.split(';')[0]
+            PORT = int(received.split(';')[1])
+
+            cache = load_json()
+            cache[arg] = {
+                'addr': HOST,
+                'port': PORT
+            }
+            with open('cache.json', 'w', encoding='utf-8') as f:
+                json.dump(cache, f, ensure_ascii=False, indent=4)
+
+        # print(f'dns server sent {HOST}:{str(PORT)}')
+
+    if HOST is None:
+        print('can\'t connect to server')
+    else:
+        # print(f'connecting to socket {HOST}:{str(PORT)}')
+        sock.connect((HOST, PORT))
+        # print('connected, waiting for a response')
+        received = sock.recv(1024).decode()
+        print(f'received: {received}')
+except KeyboardInterrupt:
+    print('ctrl+c')
+    sock.close()
+except (ConnectionAbortedError, ConnectionResetError):
+    print('connection lost')
+    sock.close()
+except ConnectionRefusedError:
+    print('connection refused, is the server up?')
     sock.close()
 finally:
-    # shut down
+    print('closing client')
     sock.close()

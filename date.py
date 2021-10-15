@@ -4,13 +4,7 @@ import datetime
 
 class MyTCPSocketHandler(socketserver.BaseRequestHandler):
     def handle(self):
-        self.data = self.request.recv(1024).decode().strip()
-
-        # self.client_address
-        print("received", self.data)
-
         date = datetime.datetime.today().strftime('%d/%m/%Y')
-
         self.request.sendall(date.encode())
 
 

@@ -1,20 +1,14 @@
-[
-    {
-        "date": {
-            "addr": "localhost",
-            "port": 2001
-        }
+{
+    "date": {
+        "addr": "localhost",
+        "port": 2001
     },
-    {
-        "meteo": {
-            "addr": "localhost",
-            "port": 2002
-        }
+    "timetable": {
+        "addr": "localhost",
+        "port": 2003
     },
-    {
-        "timetable": {
-            "addr": "localhost",
-            "port": 2003
-        }
+    "meteo": {
+        "addr": "localhost",
+        "port": 2002
     }
-]
+}
