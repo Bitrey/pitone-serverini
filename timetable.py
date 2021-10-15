@@ -5,8 +5,6 @@ import datetime
 
 class MyTCPSocketHandler(socketserver.BaseRequestHandler):
     def handle(self):
-        self.data = self.request.recv(1024).decode().strip()
-
         data = None
         with open('orari.json') as f:
             data = json.load(f)
@@ -33,8 +31,6 @@ class MyTCPSocketHandler(socketserver.BaseRequestHandler):
             f'Dalle {da} alle {a}: {nome}' for da, a, nome in materie
         ])
         final_str += f'\nAdesso abbiamo {materia_attuale}'
-
-        print("received", self.data)
 
         self.request.sendall(final_str.encode())
 
