@@ -7,7 +7,7 @@ import os
 def load_json():
     if not os.path.exists('cache.json'):
         with open('cache.json', 'w') as f:
-            f.write("[]")
+            json.dump({}, f)
     with open('cache.json') as f:
         data = json.load(f)
         return data
